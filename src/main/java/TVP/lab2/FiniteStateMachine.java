@@ -3,11 +3,15 @@ package TVP.lab2;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FiniteStateMachine {
     Map<Map.Entry<Character, Integer>, Character>  transitions;
     Scanner scanner;
     Character currState;
+    boolean _isNoTransition = false;
+    boolean _isInTheEnd = false;
     public FiniteStateMachine(){
         currState = 'S';
         scanner = new Scanner(System.in);
@@ -26,26 +30,36 @@ public class FiniteStateMachine {
         transitions.put(Map.entry('Z', 1), 'A');
     }
 
-    public void run(){
+    public void run() {
+        System.out.println("Выполните ввод: ");
         String toParse = scanner.nextLine();
-        Character nextState = currState;
-        boolean result = true;
-        for(int i  = 0; i < toParse.length(); i++){
-            int value = Integer.parseInt(String.valueOf(toParse.charAt(i)));
-            if(!transitions.containsKey(Map.entry(currState, value))){
-                result = false;
-            }else {
-                nextState = transitions.get(Map.entry(currState, value));
-                if (nextState == null) {
-                    result = false;
+        Matcher matcher;
+        Pattern pattern = Pattern.compile("^[1-3]+$");
+        matcher = pattern.matcher(toParse);
+        if (matcher.matches()) {
+            Character nextState = currState;
+            for (int i = 0; i < toParse.length(); i++) {
+                int value = Integer.parseInt(String.valueOf(toParse.charAt(i)));
+
+                if (!transitions.containsKey(Map.entry(currState, value))) {
+                    _isNoTransition = true;
+                    break;
+                } else {
+                    nextState = transitions.get(Map.entry(currState, value));
+                    currState = nextState;
                 }
-                currState = nextState;
+            }
+            if (_isNoTransition == true) {
+                System.out.println("Строка символов не входит в язык, т.к. нет перехода");
+            }
+            else if (currState != 'Z') {
+                System.out.println("Строка символов не входит в язык, т.к. не достигнуто конечное состояние");
+            } else if (currState == 'Z' && _isNoTransition == false) {
+                System.out.println("Строка символов входит в язык");
             }
         }
-        if(!result || currState != 'Z'){
-            System.out.println("A string of characters is NOT included in the language");
-        }else if(currState == 'Z' && result){
-            System.out.println("A string of characters is included in the language");
+        else {
+            System.out.println("Некорректный ввод!");
         }
     }
 }
