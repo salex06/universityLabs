@@ -36,6 +36,7 @@ public class FiniteStateMachine {
         Matcher matcher;
         Pattern pattern = Pattern.compile("^[1-3]+$");
         matcher = pattern.matcher(toParse);
+        int noTransitionValue = 0;
         if (matcher.matches()) {
             Character nextState = currState;
             for (int i = 0; i < toParse.length(); i++) {
@@ -43,6 +44,7 @@ public class FiniteStateMachine {
 
                 if (!transitions.containsKey(Map.entry(currState, value))) {
                     _isNoTransition = true;
+                    noTransitionValue = value;
                     break;
                 } else {
                     nextState = transitions.get(Map.entry(currState, value));
@@ -50,7 +52,7 @@ public class FiniteStateMachine {
                 }
             }
             if (_isNoTransition == true) {
-                System.out.println("Строка символов не входит в язык, т.к. нет перехода");
+                System.out.println("Строка символов не входит в язык, т.к. нет перехода из " + currState + " шагом " + noTransitionValue);
             }
             else if (currState != 'Z') {
                 System.out.println("Строка символов не входит в язык, т.к. не достигнуто конечное состояние");
