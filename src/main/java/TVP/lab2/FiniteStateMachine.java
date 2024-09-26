@@ -11,7 +11,6 @@ public class FiniteStateMachine {
     Scanner scanner;
     Character currState;
     boolean _isNoTransition = false;
-    boolean _isInTheEnd = false;
     public FiniteStateMachine(){
         currState = 'S';
         scanner = new Scanner(System.in);
