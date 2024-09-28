@@ -7,10 +7,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FiniteStateMachine {
-    Map<Map.Entry<Character, Integer>, Character>  transitions;
-    Scanner scanner;
-    Character currState;
-    boolean _isNoTransition = false;
+    private final Map<Map.Entry<Character, Integer>, Character>  transitions;
+    private final Scanner scanner;
+    private Character currState;
+
     public FiniteStateMachine(){
         currState = 'S';
         scanner = new Scanner(System.in);
@@ -32,12 +32,11 @@ public class FiniteStateMachine {
     public void run() {
         System.out.println("Выполните ввод: ");
         String toParse = scanner.nextLine();
-        Matcher matcher;
         Pattern pattern = Pattern.compile("^[1-3]+$");
-        matcher = pattern.matcher(toParse);
-        int noTransitionValue = 0;
+        Matcher matcher = pattern.matcher(toParse);
         if (matcher.matches()) {
-            Character nextState = currState;
+            int noTransitionValue = 0;
+            boolean _isNoTransition = false;
             for (int i = 0; i < toParse.length(); i++) {
                 int value = Integer.parseInt(String.valueOf(toParse.charAt(i)));
 
@@ -46,16 +45,15 @@ public class FiniteStateMachine {
                     noTransitionValue = value;
                     break;
                 } else {
-                    nextState = transitions.get(Map.entry(currState, value));
-                    currState = nextState;
+                    currState = transitions.get(Map.entry(currState, value));
                 }
             }
-            if (_isNoTransition == true) {
+            if (_isNoTransition) {
                 System.out.println("Строка символов не входит в язык, т.к. нет перехода из " + currState + " шагом " + noTransitionValue);
             }
             else if (currState != 'Z') {
                 System.out.println("Строка символов не входит в язык, т.к. не достигнуто конечное состояние");
-            } else if (currState == 'Z' && _isNoTransition == false) {
+            } else {
                 System.out.println("Строка символов входит в язык");
             }
         }
