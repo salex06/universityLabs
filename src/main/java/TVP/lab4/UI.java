@@ -14,12 +14,15 @@ public class UI {
 
     public void run() {
         try {
-            printStream.print("Введите выражение: ");
-            String expr = scanner.nextLine();
-            boolean result = Parser.parse(expr);
-            printStream.print("Результат выражения: " + result);
+            printStream.print("Введите код программы: ");
+            String data = scanner.nextLine();
+            boolean result = new CodeParser().parse(data);
+            if(result){
+                printStream.println("Программа отработала корректно!");
+                printStream.println(VariableStorage.getAllData());
+            }
         } catch (RuntimeException e) {
-            printStream.print("Некорректное логическое выражение!");
+            printStream.print(e.getMessage());
         }
     }
 }

@@ -35,7 +35,7 @@ class ParserTest {
     })
     @DisplayName("Ensure parser works correctly")
     void ensureParserWorksIfCorrectInput(String expr, boolean expected) {
-        boolean actual = Parser.parse(expr);
+        boolean actual = new ExpressionParser().parse(expr);
 
         assertEquals(expected, actual);
     }
@@ -58,6 +58,6 @@ class ParserTest {
     })
     @DisplayName("Ensure parser throws exception if wrong input")
     void ensureParserThrowsExceptionIfWrongInput(String expr) {
-        assertThrows(RuntimeException.class, () -> Parser.parse(expr));
+        assertThrows(RuntimeException.class, () -> new ExpressionParser().parse(expr));
     }
 }
