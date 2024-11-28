@@ -78,7 +78,7 @@ public class ExpressionParser implements Parser{
             }
         }
         if (operands.size() != 1) {
-            throw new RuntimeException();
+            throw new RuntimeException("Некорректное выражение");
         }
         return operands.pop();
     }

@@ -1,8 +1,6 @@
 package TVP.lab4;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CodeParser implements Parser {
     private static final String VAR_KEYWORD = "VAR";
@@ -17,7 +15,7 @@ public class CodeParser implements Parser {
         List<String> variables = parsedVars.getValue();
         int pointerIndex = parsedVars.getKey();
         pointerIndex = checkVariablesType(pointerIndex, data);
-        if (!(data.charAt(pointerIndex) == ';')) {
+        if (pointerIndex >= data.length() || data.charAt(pointerIndex) != ';') {
             throw new RuntimeException("Ожидается ;");
         }
         pointerIndex += 1;
@@ -28,15 +26,15 @@ public class CodeParser implements Parser {
 
 
     private Map.Entry<Integer, List<String>> getVariables(String data) {
-        List<String> variables = new ArrayList<>();
+        Set<String> variables = new HashSet<>();
         if (!data.startsWith(VAR_KEYWORD)) {
             throw new RuntimeException("Отсутствует ключевое слово " + VAR_KEYWORD);
         }
         int i = VAR_KEYWORD.length();
         StringBuilder current;
-        while (data.charAt(i) != ':') {
+        while (i < data.length() && data.charAt(i) != ':') {
             current = new StringBuilder();
-            while (data.charAt(i) != ':' && data.charAt(i) != ',') {
+            while (i < data.length() && data.charAt(i) != ':' && data.charAt(i) != ',') {
                 if(!Character.isLetter(data.charAt(i))){
                     throw new RuntimeException("Название переменной может содержать только буквы!");
                 }
@@ -47,13 +45,19 @@ public class CodeParser implements Parser {
             if (variable.length() > MAX_ID_LENGTH) {
                 throw new RuntimeException(
                         "Длина идентификатора " + variable + " равна: " + variable.length()
-                                + "(максимум: " + MAX_ID_LENGTH + ")");
+                                + " (максимум: " + MAX_ID_LENGTH + ")");
+            }
+            if(variables.contains(variable)){
+                throw new RuntimeException("Переменная " + variable + " уже объявлена!");
             }
             variables.add(variable);
-            if(data.charAt(i) == ':') continue;
+            if(i < data.length() && data.charAt(i) == ':') continue;
             i++;
         }
-        return Map.entry(i, variables);
+        if(variables.isEmpty()){
+            throw new RuntimeException("Не объявлена ни одна переменная");
+        }
+        return Map.entry(i, variables.stream().toList());
     }
 
     private int checkVariablesType(int pointerIndex, String data) {
@@ -78,7 +82,7 @@ public class CodeParser implements Parser {
             StringBuilder var = new StringBuilder();
             StringBuilder expr = new StringBuilder();
             boolean wasEquiv = false;
-            while(data.charAt(pointerIndex) != ';'){
+            while(pointerIndex < data.length() && data.charAt(pointerIndex) != ';'){
                 if(data.charAt(pointerIndex) == '=' && !wasEquiv){
                     wasEquiv = true;
                 }else if(wasEquiv){
